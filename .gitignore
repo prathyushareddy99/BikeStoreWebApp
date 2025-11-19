@@ -1,0 +1,15 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+env/
+
+# VSCode settings
+.vscode/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Windows junk
+Thumbs.db
