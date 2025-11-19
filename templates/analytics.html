@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Data Labels Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+    <style>
+        .container {
+            width: 90%;
+            margin: auto;
+            padding-top: 20px;
+        }
+        canvas {
+            margin-top: 25px;
+        }
+        .chart-box {
+            width: 70%;
+            margin: auto;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Customer Analytics</h2>
+    <a href="/dashboard" class="btn btn-secondary mb-3">Back to Dashboard</a>
+
+    <!-- Filter Dropdown -->
+    <form method="get" action="/analytics">
+        <label><b>Show:</b></label>
+        <select name="limit" onchange="this.form.submit()">
+            <option value="5"  {% if limit == 5 %}selected{% endif %}>Top 5</option>
+            <option value="10" {% if limit == 10 %}selected{% endif %}>Top 10</option>
+            <option value="0"  {% if limit == 0 %}selected{% endif %}>All Cities</option>
+        </select>
+    </form>
+
+    <!-- Bar Chart -->
+    <div class="chart-box">
+        <canvas id="barChart"></canvas>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="chart-box">
+        <canvas id="pieChart"></canvas>
+    </div>
+
+</div>
+
+
+<script>
+    const labels = {{ labels | tojson }};
+    const values = {{ values | tojson }};
+
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+
+    // Custom pastel colors
+    const colors = [
+        '#4a90e2', '#50e3c2', '#f5a623', '#d0021b', '#9013fe',
+        '#7ed321', '#417505', '#8b572a', '#b8e986', '#4a4a4a'
+    ];
+
+    // -------------------------
+    // BAR CHART
+    // -------------------------
+    new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Customers',
+                data: values,
+                backgroundColor: colors,
+            }]
+        },
+        plugins: [ChartDataLabels],
+        options: {
+            responsive: true,
+            plugins: {
+                datalabels: {
+                    color: '#000',
+                    anchor: 'end',
+                    align: 'top',
+                    font: { weight: 'bold' }
+                }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // -------------------------
+    // PIE CHART
+    // -------------------------
+    new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: colors,
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+
+</body>
+</html>
