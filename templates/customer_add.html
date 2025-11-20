@@ -26,19 +26,19 @@
 
         <div class="mb-3">
             <label>First Name</label>
-            <input type="text" name="first_name" class="form-control"
+            <input type="text" name="first_name" class="form-control" maxlength="50" placeholder="Enter first name"
                    value="{{ first_name if first_name else '' }}" required>
         </div>
 
         <div class="mb-3">
             <label>Last Name</label>
-            <input type="text" name="last_name" class="form-control"
+            <input type="text" name="last_name" class="form-control" maxlength="50" placeholder="Enter last name"
                    value="{{ last_name if last_name else '' }}" required>
         </div>
 
         <div class="mb-3">
             <label>Email</label>
-            <input type="email" name="email" class="form-control"
+            <input type="email" name="email" class="form-control" maxlength="50" placeholder="Enter email address"
                    value="{{ email if email else '' }}" required>
         </div>
 
