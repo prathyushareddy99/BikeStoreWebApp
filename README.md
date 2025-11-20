@@ -1,6 +1,7 @@
 # BikeStore Web Application
 
-This project is developed using **FastAPI**, **SQL Server**, **Jinja2**, and **Chart.js** as part of Step 4.
+A FastAPI-based CRUD + Authentication + Analytics web application.
+
 
 ## Features
 - 🔐 User Authentication (Login + Logout)
