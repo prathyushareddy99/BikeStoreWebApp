@@ -1,3 +1,9 @@
+# -------------------------
+# BikeStore Web App - Main Application File
+# Added comments for readability and code organization
+# -------------------------
+
+
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
