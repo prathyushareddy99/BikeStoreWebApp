@@ -56,25 +56,24 @@ def dashboard(request: Request):
     if not require_login(request):
         return RedirectResponse("/", status_code=302)
 
-    # ---- MINI STATS ----
     with engine.connect() as conn:
 
-        # Total customers
         total_customers = conn.execute(
             text("SELECT COUNT(*) FROM sales.customers")
         ).scalar()
 
-        # Total orders
         total_orders = conn.execute(
             text("SELECT COUNT(*) FROM sales.orders")
         ).scalar()
 
-        # Total products
         total_products = conn.execute(
             text("SELECT COUNT(*) FROM production.products")
         ).scalar()
 
-        # Chart data: orders grouped by store (limit 5)
+        total_stores = conn.execute(
+            text("SELECT COUNT(*) FROM sales.stores")
+        ).scalar()
+
         rows = conn.execute(text("""
             SELECT TOP 5 s.store_name, COUNT(o.order_id) AS total_orders
             FROM sales.orders o
@@ -83,8 +82,8 @@ def dashboard(request: Request):
             ORDER BY total_orders DESC
         """)).mappings().all()
 
-    mini_labels = ["Customers", "Orders", "Products"]
-    mini_values = [total_customers, total_orders, total_products]
+    mini_labels = ["Customers", "Orders", "Products", "Stores"]
+    mini_values = [total_customers, total_orders, total_products, total_stores]
 
     chart_labels = [r["store_name"] for r in rows]
     chart_values = [r["total_orders"] for r in rows]
@@ -99,7 +98,7 @@ def dashboard(request: Request):
 
 
 # ------------------------------
-# CUSTOMERS LIST (with search + pagination)
+# CUSTOMERS LIST
 # ------------------------------
 @app.get("/customers", response_class=HTMLResponse)
 def customers(request: Request, page: int = 1, search: str = ""):
@@ -142,9 +141,35 @@ def add_form(request: Request):
     return templates.TemplateResponse("customer_add.html", {"request": request})
 
 
-@app.post("/customers/add")
-def add_customer(first_name: str = Form(...), last_name: str = Form(...),
-                 email: str = Form(...), city: str = Form(...)):
+# ------------------------------
+# ADD CUSTOMER (VALIDATED)
+# ------------------------------
+@app.post("/customers/add", response_class=HTMLResponse)
+def add_customer(request: Request,
+                 first_name: str = Form(""),
+                 last_name: str = Form(""),
+                 email: str = Form(""),
+                 city: str = Form("")):
+
+    errors = []
+    if not first_name.strip():
+        errors.append("First Name is required.")
+    if not last_name.strip():
+        errors.append("Last Name is required.")
+    if not email.strip():
+        errors.append("Email is required.")
+    if not city.strip():
+        errors.append("City is required.")
+
+    if errors:
+        return templates.TemplateResponse("customer_add.html", {
+            "request": request,
+            "errors": errors,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "city": city
+        })
 
     with engine.connect() as conn:
         conn.execute(text("""
@@ -176,9 +201,40 @@ def edit_customer(request: Request, cid: int):
     })
 
 
-@app.post("/customers/edit/{cid}")
-def save_edit(cid: int, first_name: str = Form(...), last_name: str = Form(...),
-              email: str = Form(...), city: str = Form(...)):
+# ------------------------------
+# SAVE EDIT (VALIDATED)
+# ------------------------------
+@app.post("/customers/edit/{cid}", response_class=HTMLResponse)
+def save_edit(request: Request, cid: int,
+              first_name: str = Form(""),
+              last_name: str = Form(""),
+              email: str = Form(""),
+              city: str = Form("")):
+
+    errors = []
+    if not first_name.strip():
+        errors.append("First Name is required.")
+    if not last_name.strip():
+        errors.append("Last Name is required.")
+    if not email.strip():
+        errors.append("Email is required.")
+    if not city.strip():
+        errors.append("City is required.")
+
+    if errors:
+        cust = {
+            "customer_id": cid,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "city": city
+        }
+
+        return templates.TemplateResponse("customer_edit.html", {
+            "request": request,
+            "cust": cust,
+            "errors": errors
+        })
 
     with engine.connect() as conn:
         conn.execute(text("""
@@ -211,7 +267,6 @@ def analytics(request: Request, limit: int = 5):
     if not require_login(request):
         return RedirectResponse("/", status_code=302)
 
-    # SQL Server: use TOP for limiting
     top_clause = "" if limit == 0 else f"TOP {limit}"
 
     query = f"""

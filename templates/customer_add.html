@@ -11,26 +11,41 @@
 
     <h2>Add Customer</h2>
 
+    <!-- SHOW VALIDATION ERRORS -->
+    {% if errors %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for e in errors %}
+                    <li>{{ e }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
     <form action="/customers/add" method="POST">
 
         <div class="mb-3">
             <label>First Name</label>
-            <input type="text" name="first_name" class="form-control" required>
+            <input type="text" name="first_name" class="form-control"
+                   value="{{ first_name if first_name else '' }}" required>
         </div>
 
         <div class="mb-3">
             <label>Last Name</label>
-            <input type="text" name="last_name" class="form-control" required>
+            <input type="text" name="last_name" class="form-control"
+                   value="{{ last_name if last_name else '' }}" required>
         </div>
 
         <div class="mb-3">
             <label>Email</label>
-            <input type="email" name="email" class="form-control" required>
+            <input type="email" name="email" class="form-control"
+                   value="{{ email if email else '' }}" required>
         </div>
 
         <div class="mb-3">
             <label>City</label>
-            <input type="text" name="city" class="form-control">
+            <input type="text" name="city" class="form-control"
+                   value="{{ city if city else '' }}">
         </div>
 
         <button class="btn btn-success w-100">Save</button>

@@ -11,26 +11,41 @@
 
     <h2>Edit Customer</h2>
 
+    <!-- SHOW VALIDATION ERRORS -->
+    {% if errors %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for e in errors %}
+                    <li>{{ e }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
     <form action="/customers/edit/{{ cust.customer_id }}" method="POST">
 
         <div class="mb-3">
             <label>First Name</label>
-            <input type="text" name="first_name" value="{{ cust.first_name }}" class="form-control" required>
+            <input type="text" name="first_name"
+                   value="{{ cust.first_name }}" class="form-control" required>
         </div>
 
         <div class="mb-3">
             <label>Last Name</label>
-            <input type="text" name="last_name" value="{{ cust.last_name }}" class="form-control" required>
+            <input type="text" name="last_name"
+                   value="{{ cust.last_name }}" class="form-control" required>
         </div>
 
         <div class="mb-3">
             <label>Email</label>
-            <input type="email" name="email" value="{{ cust.email }}" class="form-control" required>
+            <input type="email" name="email"
+                   value="{{ cust.email }}" class="form-control" required>
         </div>
 
         <div class="mb-3">
             <label>City</label>
-            <input type="text" name="city" value="{{ cust.city }}" class="form-control">
+            <input type="text" name="city"
+                   value="{{ cust.city }}" class="form-control">
         </div>
 
         <button class="btn btn-primary w-100">Update</button>
