@@ -15,12 +15,21 @@
             margin: auto;
             padding-top: 20px;
         }
+
         canvas {
             margin-top: 25px;
         }
+
         .chart-box {
             width: 70%;
             margin: auto;
+        }
+
+        /* NEW — Small Pie Chart Box */
+        .pie-box {
+            width: 350px;
+            height: 350px;
+            margin: 30px auto;
         }
     </style>
 
@@ -31,6 +40,7 @@
 <div class="container">
 
     <h2>Customer Analytics</h2>
+
     <a href="/dashboard" class="btn btn-secondary mb-3">Back to Dashboard</a>
 
     <!-- Filter Dropdown -->
@@ -48,8 +58,8 @@
         <canvas id="barChart"></canvas>
     </div>
 
-    <!-- Pie Chart -->
-    <div class="chart-box">
+    <!-- Pie Chart (SMALLER FIXED SIZE) -->
+    <div class="pie-box">
         <canvas id="pieChart"></canvas>
     </div>
 
@@ -57,13 +67,14 @@
 
 
 <script>
+
     const labels = {{ labels | tojson }};
     const values = {{ values | tojson }};
 
     const barCtx = document.getElementById('barChart').getContext('2d');
     const pieCtx = document.getElementById('pieChart').getContext('2d');
 
-    // Custom pastel colors
+    // Pastel color palette
     const colors = [
         '#4a90e2', '#50e3c2', '#f5a623', '#d0021b', '#9013fe',
         '#7ed321', '#417505', '#8b572a', '#b8e986', '#4a4a4a'
@@ -79,7 +90,7 @@
             datasets: [{
                 label: 'Total Customers',
                 data: values,
-                backgroundColor: colors,
+                backgroundColor: colors
             }]
         },
         plugins: [ChartDataLabels],
@@ -100,7 +111,7 @@
     });
 
     // -------------------------
-    // PIE CHART
+    // PIE CHART  (SMALLER & CENTERED)
     // -------------------------
     new Chart(pieCtx, {
         type: 'pie',
@@ -108,13 +119,15 @@
             labels: labels,
             datasets: [{
                 data: values,
-                backgroundColor: colors,
+                backgroundColor: colors
             }]
         },
         options: {
-            responsive: true
+            responsive: true,
+            maintainAspectRatio: false
         }
     });
+
 </script>
 
 </body>

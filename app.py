@@ -56,7 +56,46 @@ def dashboard(request: Request):
     if not require_login(request):
         return RedirectResponse("/", status_code=302)
 
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    # ---- MINI STATS ----
+    with engine.connect() as conn:
+
+        # Total customers
+        total_customers = conn.execute(
+            text("SELECT COUNT(*) FROM sales.customers")
+        ).scalar()
+
+        # Total orders
+        total_orders = conn.execute(
+            text("SELECT COUNT(*) FROM sales.orders")
+        ).scalar()
+
+        # Total products
+        total_products = conn.execute(
+            text("SELECT COUNT(*) FROM production.products")
+        ).scalar()
+
+        # Chart data: orders grouped by store (limit 5)
+        rows = conn.execute(text("""
+            SELECT TOP 5 s.store_name, COUNT(o.order_id) AS total_orders
+            FROM sales.orders o
+            JOIN sales.stores s ON o.store_id = s.store_id
+            GROUP BY s.store_name
+            ORDER BY total_orders DESC
+        """)).mappings().all()
+
+    mini_labels = ["Customers", "Orders", "Products"]
+    mini_values = [total_customers, total_orders, total_products]
+
+    chart_labels = [r["store_name"] for r in rows]
+    chart_values = [r["total_orders"] for r in rows]
+
+    return templates.TemplateResponse("dashboard.html", {
+        "request": request,
+        "mini_labels": mini_labels,
+        "mini_values": mini_values,
+        "chart_labels": chart_labels,
+        "chart_values": chart_values
+    })
 
 
 # ------------------------------
